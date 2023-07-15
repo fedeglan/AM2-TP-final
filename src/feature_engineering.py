@@ -163,6 +163,11 @@ class FeatureEngineeringPipeline(object):
             columns=["Item_Identifier", "Outlet_Identifier"]
         )
 
+        # 12) Remove Item_Type & Item_Fat_Content
+        df_transformed = df_transformed.drop(
+            columns=["Item_Type", "Item_Fat_Content"]
+        )
+    
         return df_transformed
 
     def write_prepared_data(
