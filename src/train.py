@@ -30,6 +30,7 @@ class ModelTrainingPipeline(object):
         :rtype: pd.DataFrame
         """
         pandas_df = pd.read_csv(self.input_path, index_col=0)
+        pandas_df = pandas_df.loc[pandas_df["isTrain"] == 1]
         return pandas_df
 
     def model_training(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -41,12 +42,9 @@ class ModelTrainingPipeline(object):
         :return: The trained linear regression model
         :rtype: LinearRegression
         """
-        # Use only train data
-        train_data = df.loc[df["isTrain"] == 1]
-
         # Separate X_train & Y_train
-        y_train = train_data["Item_Outlet_Sales"]
-        x_train = train_data.drop(columns=["Item_Outlet_Sales", "isTrain"])
+        y_train = df["Item_Outlet_Sales"]
+        x_train = df.drop(columns=["Item_Outlet_Sales", "isTrain"])
 
         # Train model
         seed = 28
