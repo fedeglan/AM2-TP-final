@@ -39,8 +39,8 @@ class MakePredictionPipeline(object):
         :return: The input data as a pandas DataFrame.
         """
         data = pd.read_csv(self.input_path, index_col=0)
-        data = data.loc[data["isTrain"] == 0]
-        data = data.drop(columns=["Item_Outlet_Sales", "isTrain"])
+        if "Item_Outlet_Sales" in data.columns:
+            data = data.drop(columns=["Item_Outlet_Sales"])
         return data
 
     def load_model(self) -> None:
