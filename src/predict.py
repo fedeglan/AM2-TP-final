@@ -51,14 +51,14 @@ class MakePredictionPipeline(object):
         :return: The input data as a pandas DataFrame.
         """
         try:
-            data = pd.read_csv(self.input_path, index_col=0)       
+            data = pd.read_csv(self.input_path, index_col=0)
             if "Item_Outlet_Sales" in data.columns:
                 data = data.drop(columns=["Item_Outlet_Sales"])
             self.logger.debug("data was loaded sucesfully.")
             return data
         except Exception as err:
             self.logger.error("data could not be loaded. "
-                             f"Error: {err}.")
+                              f"Error: {err}.")
 
     def load_model(self) -> None:
         """
@@ -71,7 +71,7 @@ class MakePredictionPipeline(object):
             self.logger.debug("model was loaded sucesfully.")
         except Exception as err:
             self.logger.error("model could not be loaded. "
-                             f"Error: {err}.")
+                              f"Error: {err}.")
         return None
 
     def make_predictions(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -84,17 +84,17 @@ class MakePredictionPipeline(object):
         if hasattr(self, "model"):
             try:
                 new_data = self.model.predict(data)
-                new_data = pd.DataFrame(new_data, columns=["Item_Outlet_Sales"])
+                new_data = pd.DataFrame(
+                    new_data, columns=["Item_Outlet_Sales"])
                 self.logger.debug("a new prediction was made.")
                 return new_data
             except Exception as err:
                 self.logger.error("couldn't make a prediction. "
-                                f"Error: {err}")
+                                  f"Error: {err}")
                 return None
         else:
             self.logger.error("model has not been loaded.")
             return None
-
 
     def write_predictions(self, predicted_data: pd.DataFrame) -> None:
         """
@@ -107,7 +107,7 @@ class MakePredictionPipeline(object):
             self.logger.debug("predictions were saved sucesfully.")
         except Exception as err:
             self.logger.error("couldn't make a prediction. "
-                                f"Error: {err}")
+                              f"Error: {err}")
         return None
 
     def run(self):
@@ -125,9 +125,12 @@ class MakePredictionPipeline(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("data_path", help="Path of the input data (transformed)")
-    parser.add_argument("model_path", help="Path where to save the model's pickle")
-    parser.add_argument("output_path", help="Path where to save the predictions")
+    parser.add_argument(
+        "data_path", help="Path of the input data (transformed)")
+    parser.add_argument(
+        "model_path", help="Path where to save the model's pickle")
+    parser.add_argument(
+        "output_path", help="Path where to save the predictions")
     args = parser.parse_args()
 
     MakePredictionPipeline(

@@ -16,6 +16,7 @@ import copy
 import logging
 import argparse
 
+
 class FeatureEngineeringPipeline(object):
     def __init__(self, input_path, output_path):
         """
@@ -70,8 +71,8 @@ class FeatureEngineeringPipeline(object):
         try:
             df_transformed["Outlet_Establishment_Year"] = (
                 2020 - df_transformed["Outlet_Establishment_Year"]
-            )     
-            self.logger.debug("establishment years were corrected.")           
+            )
+            self.logger.debug("establishment years were corrected.")
         except Exception as err:
             self.logger.error("establishment years couldn't "
                               f"be corrected. Error: {err}")
@@ -84,7 +85,7 @@ class FeatureEngineeringPipeline(object):
             ].replace(
                 {"low fat": "Low Fat", "LF": "Low Fat", "reg": "Regular"}
             )
-            self.logger.debug("unique labels were created " 
+            self.logger.debug("unique labels were created "
                               "for Item_Fat_Content")
         except Exception as err:
             self.logger.error("unique labels for Item_Fat_Content "
@@ -108,7 +109,7 @@ class FeatureEngineeringPipeline(object):
                     .mode()
                 )
                 if not mode.empty:
-                    mode = mode.iloc[0,0]
+                    mode = mode.iloc[0, 0]
                 else:
                     mode = 0.0
                 df_transformed.loc[
@@ -116,7 +117,7 @@ class FeatureEngineeringPipeline(object):
                 ] = mode
             self.logger.debug("missing Item_Weight was cleaned.")
         except Exception as err:
-            self.logger.error("missing Item_Weight couldn't be cleaned. " 
+            self.logger.error("missing Item_Weight couldn't be cleaned. "
                               f"Error: {err}")
             return None
 
@@ -134,7 +135,7 @@ class FeatureEngineeringPipeline(object):
                 ] = "Small"
             self.logger.debug("missing Outlet_Size was cleaned.")
         except Exception as err:
-            self.logger.error("missing Outlet_Size couldn't be cleaned. " 
+            self.logger.error("missing Outlet_Size couldn't be cleaned. "
                               f"Error: {err}")
             return None
 
@@ -159,7 +160,7 @@ class FeatureEngineeringPipeline(object):
                 df_transformed["Item_Type"] == "Fruits and Vegetables",
                 "Item_Fat_Content",
             ] = "NA"
-            self.logger.debug("none category was added " 
+            self.logger.debug("none category was added "
                               "to Item_Fat_Content.")
         except Exception as err:
             self.logger.error("none category couldn't be added "
@@ -200,7 +201,7 @@ class FeatureEngineeringPipeline(object):
                 df_transformed["Item_Type"] == "Non perishable",
                 "Item_Fat_Content",
             ] = "NA"
-            self.logger.debug("new categories were assigned " 
+            self.logger.debug("new categories were assigned "
                               "for Item_Fat_Content.")
         except Exception as err:
             self.logger.error("new categories couldn't be assigned "
@@ -300,7 +301,8 @@ class FeatureEngineeringPipeline(object):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("input_path", help="Path of the input data")
-    parser.add_argument("output_path", help="Path where to save the transformed data")
+    parser.add_argument(
+        "output_path", help="Path where to save the transformed data")
     args = parser.parse_args()
 
     FeatureEngineeringPipeline(

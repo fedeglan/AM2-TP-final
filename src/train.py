@@ -106,10 +106,13 @@ class ModelTrainingPipeline(object):
             if model_trained is not None:
                 self.model_dump(model_trained)
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("data_path", help="Path of the input data (transformed)")
-    parser.add_argument("model_path", help="Path where to save the model's pickle")
+    parser.add_argument(
+        "data_path", help="Path of the input data (transformed)")
+    parser.add_argument(
+        "model_path", help="Path where to save the model's pickle")
     args = parser.parse_args()
 
     ModelTrainingPipeline(

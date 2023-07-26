@@ -1,34 +1,49 @@
+"""
+inference_pipeline.py
+
+Pipeline for performing inference on input data.
+
+DESCRIPTION: This script runs the feature_engineering.py and
+predict.py scripts subsequently in order to generate a series
+of predictions based on an input dataset.
+AUTHOR: Federico Glancszpigel
+DATE: 26/7/2023
+"""
+
 import subprocess
 import os
 import argparse
 
 # Default parameters for running the pipeline
 path_to_data_folder = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "data")
-input_path_placeholder = os.path.join(path_to_data_folder, 
+    os.path.dirname(os.path.dirname(__file__)), "data")
+input_path_placeholder = os.path.join(path_to_data_folder,
                                       "Test_BigMart.csv")
-transformed_path_placeholder = os.path.join(path_to_data_folder, 
-                                       "test_data_transformed.csv")
-output_path_placeholder = os.path.join(path_to_data_folder, 
+transformed_path_placeholder = os.path.join(path_to_data_folder,
+                                            "test_data_transformed.csv")
+output_path_placeholder = os.path.join(path_to_data_folder,
                                        "predictions.csv")
-model_path_placeholder = os.path.join(path_to_data_folder, 
-                                       "model.pickle")
+model_path_placeholder = os.path.join(path_to_data_folder,
+                                      "model.pickle")
 
 if __name__ == "__main__":
     # Add params to parser
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_path", help="Path of the input data")
-    parser.add_argument("--transformed_path", help="Path where to save the transformed data")
-    parser.add_argument("--model_path", help="Path where to save the trained model's pickle")
-    parser.add_argument("--output_path", help="Path where to save the predictions")
-    
+    parser.add_argument("--transformed_path",
+                        help="Path where to save the transformed data")
+    parser.add_argument(
+        "--model_path", help="Path where to save the trained model's pickle")
+    parser.add_argument(
+        "--output_path", help="Path where to save the predictions")
+
     # Get params from console
     args = parser.parse_args()
     if args.input_path is None:
         input_path = input_path_placeholder
     else:
         input_path = args.input_path
-    
+
     if args.transformed_path is None:
         transformed_path = transformed_path_placeholder
     else:
@@ -38,12 +53,16 @@ if __name__ == "__main__":
         model_path = model_path_placeholder
     else:
         model_path = args.model_path
-    
+
     if args.output_path is None:
         output_path = output_path_placeholder
     else:
         output_path = args.output_path
 
-subprocess.run(['Python', 'feature_engineering.py', input_path, transformed_path])
+    # Run feature engineering
+    subprocess.run(['Python', 'feature_engineering.py',
+                input_path, transformed_path])
 
-subprocess.run(['Python', 'predict.py', transformed_path, model_path, output_path])
+    # Run prediction pipeline
+    subprocess.run(
+        ['Python', 'predict.py', transformed_path, model_path, output_path])
