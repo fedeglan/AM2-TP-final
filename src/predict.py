@@ -17,6 +17,8 @@ DATE: 15/7/2023
 import pandas as pd
 import pickle
 import os
+import argparse
+import logging
 
 
 class MakePredictionPipeline(object):
@@ -32,23 +34,44 @@ class MakePredictionPipeline(object):
         self.output_path = output_path
         self.model_path = model_path
 
+        # Set up logger
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+        format = '%(asctime)s - %(levelname)s - Prediction - %(message)s'
+        formatter = logging.Formatter(format, datefmt='%Y-%m-%d %H:%M:%S')
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.DEBUG)
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
+
     def load_data(self) -> pd.DataFrame:
         """
         Load the input data for making predictions.
 
         :return: The input data as a pandas DataFrame.
         """
-        data = pd.read_csv(self.input_path, index_col=0)
-        if "Item_Outlet_Sales" in data.columns:
-            data = data.drop(columns=["Item_Outlet_Sales"])
-        return data
+        try:
+            data = pd.read_csv(self.input_path, index_col=0)       
+            if "Item_Outlet_Sales" in data.columns:
+                data = data.drop(columns=["Item_Outlet_Sales"])
+            self.logger.debug("data was loaded sucesfully.")
+            return data
+        except Exception as err:
+            self.logger.error("data could not be loaded. "
+                             f"Error: {err}.")
 
     def load_model(self) -> None:
         """
         Load the trained model for making predictions.
         """
-        with open(self.model_path, "rb") as file:
-            self.model = pickle.load(file)
+        try:
+            with open(self.model_path, "rb") as file:
+                self.model = pickle.load(file)
+                file.close()
+            self.logger.debug("model was loaded sucesfully.")
+        except Exception as err:
+            self.logger.error("model could not be loaded. "
+                             f"Error: {err}.")
         return None
 
     def make_predictions(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -58,9 +81,20 @@ class MakePredictionPipeline(object):
         :param data: The input data as a pandas DataFrame.
         :return: The predicted values as a pandas DataFrame.
         """
-        new_data = self.model.predict(data)
-        new_data = pd.DataFrame(new_data, columns=["Item_Outlet_Sales"])
-        return new_data
+        if hasattr(self, "model"):
+            try:
+                new_data = self.model.predict(data)
+                new_data = pd.DataFrame(new_data, columns=["Item_Outlet_Sales"])
+                self.logger.debug("a new prediction was made.")
+                return new_data
+            except Exception as err:
+                self.logger.error("couldn't make a prediction. "
+                                f"Error: {err}")
+                return None
+        else:
+            self.logger.error("model has not been loaded.")
+            return None
+
 
     def write_predictions(self, predicted_data: pd.DataFrame) -> None:
         """
@@ -68,7 +102,12 @@ class MakePredictionPipeline(object):
 
         :param predicted_data: The predicted data as a pandas DataFrame.
         """
-        predicted_data.to_csv(self.output_path)
+        try:
+            predicted_data.to_csv(self.output_path)
+            self.logger.debug("predictions were saved sucesfully.")
+        except Exception as err:
+            self.logger.error("couldn't make a prediction. "
+                                f"Error: {err}")
         return None
 
     def run(self):
@@ -76,20 +115,23 @@ class MakePredictionPipeline(object):
         Runs the prediction pipeline.
         """
         data = self.load_data()
-        self.load_model()
-        df_preds = self.make_predictions(data)
-        self.write_predictions(df_preds)
+        if data is not None:
+            self.load_model()
+            if hasattr(self, "model"):
+                df_preds = self.make_predictions(data)
+                if df_preds is not None:
+                    self.write_predictions(df_preds)
 
 
 if __name__ == "__main__":
-    path_to_data_folder = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), "data"
-    )
-    pipeline = MakePredictionPipeline(
-        input_path=os.path.join(
-            path_to_data_folder, "transformed_dataset.csv"
-        ),
-        output_path=os.path.join(path_to_data_folder, "predictions.csv"),
-        model_path=os.path.join(path_to_data_folder, "model.pickle"),
-    )
-    pipeline.run()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("data_path", help="Path of the input data (transformed)")
+    parser.add_argument("model_path", help="Path where to save the model's pickle")
+    parser.add_argument("output_path", help="Path where to save the predictions")
+    args = parser.parse_args()
+
+    MakePredictionPipeline(
+        input_path=args.data_path,
+        model_path=args.model_path,
+        output_path=args.output_path
+    ).run()
