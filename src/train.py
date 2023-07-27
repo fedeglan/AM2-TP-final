@@ -10,38 +10,53 @@ AUTHOR: Federico Glancszpigel
 DATE: 15/7/2023
 """
 
-# Imports
+# Package Imports
+from utils import setup_logger, FTPDatabase
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-import pickle
-import argparse
-import logging
+import sys
+import os
+
+# Local imports
+sys.path.append(os.path.dirname(__file__))
 
 
 class ModelTrainingPipeline(object):
-    def __init__(self, input_path, model_path):
-        self.input_path = input_path
-        self.model_path = model_path
+    """
+    ModelTrainingPipeline class for training a linear regression model.
+
+    This class provides methods to read input data, train a
+    linear regression model, and save the trained model to a file.
+    """
+
+    def __init__(self, folder_path: str):
+        """
+        Initialize the ModelTrainingPipeline object.
+
+        :param folder_path: Path to the folder containing the data files.
+        :type folder_path: str
+        """
+        # Setup database
+        self.database = FTPDatabase(folder_path)
 
         # Set up logger
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG)
-        format = '%(asctime)s - %(levelname)s - Training - %(message)s'
-        formatter = logging.Formatter(format, datefmt='%Y-%m-%d %H:%M:%S')
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.DEBUG)
-        console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
+        self.logger = setup_logger("Training")
 
-    def read_data(self) -> pd.DataFrame:
+    def read_data(self, file_name: str) -> pd.DataFrame:
         """
         Read input data from a file and return as a DataFrame.
 
-        :return: The input data as a DataFrame
+        :param file_name: The name of the input data file.
+        :type file_name: str
+        :return: The input data as a DataFrame.
         :rtype: pd.DataFrame
         """
         try:
-            pandas_df = pd.read_csv(self.input_path, index_col=0)
+            pandas_df = self.database.import_file(file_name)
+            try:
+                pandas_df = pandas_df.drop(columns=["Unnamed: 0"])
+            except:
+                pass
             self.logger.debug("data was read succesfully.")
             return pandas_df
         except Exception as err:
@@ -53,9 +68,9 @@ class ModelTrainingPipeline(object):
         """
         Train a linear regression model using the input DataFrame.
 
-        :param df: The input DataFrame containing training data
+        :param df: The input DataFrame containing training data.
         :type df: pd.DataFrame
-        :return: The trained linear regression model
+        :return: The trained linear regression model.
         :rtype: LinearRegression
         """
         # Separate X_train & Y_train
@@ -70,7 +85,6 @@ class ModelTrainingPipeline(object):
 
         # Train model
         try:
-            seed = 28
             model = LinearRegression()
             model.fit(x_train, y_train)
             self.logger.debug("model was trained sucesfully.")
@@ -80,42 +94,34 @@ class ModelTrainingPipeline(object):
                               f"Error: {err}.")
             return None
 
-    def model_dump(self, model_trained) -> None:
+    def model_dump(self, model_trained, file_name: str) -> None:
         """
         Save the trained model to a file using pickle.
 
-        :param model_trained: The trained model
+        :param model_trained: The trained model.
         :type model_trained: LinearRegression
+        :param file_name: The name of the output file to save the model.
+        :type file_name: str
         """
         try:
-            with open(self.model_path, "wb") as file:
-                pickle.dump(model_trained, file)
+            self.database.save_file(model_trained, file_name)
             self.logger.debug("model was saved sucesfully.")
         except Exception as err:
             self.logger.error("model couldn't be saved. "
                               f"Error: {err}.")
         return None
 
-    def run(self):
+    def run(self, data_file_name, model_file_name):
         """
-        Executes model training.
+        Execute model training.
+
+        :param data_file_name: The name of the input data file.
+        :type data_file_name: str
+        :param model_file_name: The name of the output file to save the trained model.
+        :type model_file_name: str
         """
-        df = self.read_data()
+        df = self.read_data(data_file_name)
         if df is not None:
             model_trained = self.model_training(df)
             if model_trained is not None:
-                self.model_dump(model_trained)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "data_path", help="Path of the input data (transformed)")
-    parser.add_argument(
-        "model_path", help="Path where to save the model's pickle")
-    args = parser.parse_args()
-
-    ModelTrainingPipeline(
-        input_path=args.data_path,
-        model_path=args.model_path,
-    ).run()
+                self.model_dump(model_trained, model_file_name)
