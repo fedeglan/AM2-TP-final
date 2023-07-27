@@ -24,12 +24,12 @@ En la consola (CMD en windows o terminal de Mac) correr el siguiente comando:
 
     - Para Windows:
     ```
-    venv\Scripts\activate.bat
+    env\Scripts\activate.bat
     ```
 
     - Para MacOs/Linux
     ```
-    source venv/bin/activate
+    source env/bin/activate
     ```
 
 4. Ya con el environment virtual activado, procedemos a instalar los requerimientos.
@@ -75,6 +75,10 @@ dentro de la carpeta del proyecto)
 
     --output_file_name: nombre del archivo donde guardar las predicciones del modelo (dada la data de entrada). Por default esta seteado a predictions.csv.
 
+    Por ejemplo, se puede probar el pipeline de inferencia sobre el archivo example.json corriendo el siguiente comando en consola:
+    ```
+    python src/inference_pipeline.py --input_file_name example.json
+    ```
 Tanto el pipeline de entrenamiento como de inferencia imprimen un log en la consola donde se puede ver si el algoritmo ejecuta todos los pasos correspondientes o arroja algun error.
 
 ### Ajuste de Hiper-parametros
