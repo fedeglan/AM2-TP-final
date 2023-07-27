@@ -48,11 +48,13 @@ dentro de la carpeta del proyecto)
 
     Podemos incluir los siguientes argumentos opcionales:
 
-    --input_path: ruta al archivo con los datos de entrenamiento. Por default la ruta esta seteada a /data/Train_BigMart.csv.
+    --data_folder_path: ruta a la carpeta donde guardamos los datos. Por default la ruta esta seteada a /data.
 
-    --output_path: ruta al archivo donde guardar la data transformada por el proceso de ingenieria de features. Por default la ruta esta seteada a /data/train_data_transformed.csv.
+    --input_file_name: nombre del archivo con los datos de entrenamiento. Por default esta seteado a Train_BigMart.csv.
 
-    --model_path: ruta al archivo .pickle donde guardar el modelo entrenado. Por default la ruta esta setada a /data/model.pickle.
+    --output_file_name: nombre del archivo para guardar la data transformada por el proceso de ingenieria de features. Por default esta seteado a train_data_transformed.csv.
+
+    --model_file_name: nombre del archivo donde guardar el modelo entrenado. Por default esta setado a model.pickle.
 
 2. Para correr el pipeline de inferencia, simplemente corremos el siguiente comando (siempre dentro de la carpeta del proyecto)
     ```
@@ -61,13 +63,17 @@ dentro de la carpeta del proyecto)
 
     Podemos incluir los siguientes argumentos opcionales:
 
-    --input_path: ruta al archivo con los datos de testeo. Por default la ruta esta seteada a /data/Test_BigMart.csv.
+    --data_folder_path: ruta a la carpeta donde guardamos los datos. Por default la ruta esta seteada a /data.
+    
+    --input_file_name: nombre del archivo con los datos de testeo. Por default esta seteado a Test_BigMart.csv.
 
-    --transformed_path: ruta al archivo donde guardar la data transformada por el proceso de ingenieria de features. Por default la ruta esta seteada a /data/test_data_transformed.csv.
+    --transformed_data_file_name: nombre del archivo para guardar la data transformada por el proceso de ingenieria de features. Por default esta seteado a test_data_transformed.csv.
 
-    --model_path: ruta al archivo .pickle donde se encuentra el modelo entrenado. Por default la ruta esta setada a /data/model.pickle.
+    --train_data_file_name: nombre del archivo con los datos de entrenamiento. Por default esta seteado a Train_BigMart.csv.
 
-    --output_path: ruta al archivo donde guardar las predicciones del modelo (dada la data de entrada). Por default la ruta esta seteada a /data/predictions.csv.
+    --model_file_name: nombre del archivo que contiene el modelo entrenado. Por default esta setado a model.pickle.
+
+    --output_file_name: nombre del archivo donde guardar las predicciones del modelo (dada la data de entrada). Por default esta seteado a predictions.csv.
 
 Tanto el pipeline de entrenamiento como de inferencia imprimen un log en la consola donde se puede ver si el algoritmo ejecuta todos los pasos correspondientes o arroja algun error.
 

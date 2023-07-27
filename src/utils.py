@@ -14,7 +14,6 @@ import pandas as pd
 import logging
 import pickle
 
-
 def setup_logger(label):
     """
     Set up a logger with the specified label.

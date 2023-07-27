@@ -11,7 +11,6 @@ DATE: 15/7/2023
 """
 
 # Package Imports
-from utils import setup_logger, FTPDatabase
 import pandas as pd
 import copy
 import sys
@@ -19,7 +18,7 @@ import os
 
 # Local imports
 sys.path.append(os.path.dirname(__file__))
-
+from utils import setup_logger, FTPDatabase
 
 class FeatureEngineeringPipeline(object):
     """

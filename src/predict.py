@@ -14,15 +14,13 @@ DATE: 15/7/2023
 """
 
 # Imports
-from utils import setup_logger, FTPDatabase
 import pandas as pd
-import pickle
 import os
 import sys
 
 # Local imports
 sys.path.append(os.path.dirname(__file__))
-
+from utils import setup_logger, FTPDatabase
 
 class MakePredictionPipeline(object):
     """

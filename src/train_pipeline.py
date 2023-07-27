@@ -11,14 +11,14 @@ DATE: 26/7/2023
 """
 
 # Package imports
-from train import ModelTrainingPipeline
-from feature_engineering import FeatureEngineeringPipeline
 import sys
 import os
 import argparse
 
 # Local imports
 sys.path.append(os.path.dirname(__file__))
+from train import ModelTrainingPipeline
+from feature_engineering import FeatureEngineeringPipeline
 
 # Default parameters for running the pipeline
 folder_path_placeholder = os.path.join(
